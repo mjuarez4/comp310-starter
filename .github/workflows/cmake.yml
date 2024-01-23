@@ -39,4 +39,3 @@ jobs:
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       #run: ctest -C ${{env.BUILD_TYPE}}
       run: for test_bin in bin/*tests; do "./$test_bin"; done
-
