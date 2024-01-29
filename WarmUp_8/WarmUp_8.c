@@ -1,99 +1,84 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct linkedListElement{
-
-	struct linkedListElement *next;
-	struct linkedListElement *prev;
-	int value;
+// Chatgpt4 was used to help understand malloc. This code was adapted from work
+// on a previous assignment in comp 264.
+struct Node {
+  struct Node *next;
+  int data;
 };
 
-void printList(struct LinkedList* llist) {
-    struct Node* tnode = llist->head;
-    while (tnode != NULL) {
-        printf("%d ", tnode->data);
-        tnode = tnode->next;
+struct Node *listHead = NULL;
+
+void printList(struct Node *head) {
+  struct Node *tnode = head;
+  while (tnode != NULL) {
+    printf("%d ", tnode->data);
+    tnode = tnode->next;
+  }
+  printf("\n");
+}
+
+void push(struct Node *newListElement) {
+  newListElement->next = NULL;
+
+  if (listHead == NULL) {
+    listHead = newListElement;
+  } else {
+    struct Node *iterator = listHead;
+    while (iterator->next != NULL) {
+      iterator = iterator->next;
     }
+    iterator->next = newListElement;
+  }
 }
 
+void delete (struct Node *element) {
+  if (element == NULL)
+    return;
 
-void listAdd(struct linkedListElement *newListElement){
-	if (listHead == NULL){
-	
-		listHead = newListElement;
-
-	} else if (listHead->value >= newListElement->value){
-		newListElement->next = listHead;
-		listHead->prev = newListElement;
-		listHead = newListElement;
-	} else {
-	
-		struct linkedListElement *iterator = listHead;
-		while(iterator->next != NULL && iterator->next->value < newListElement->value){
-		
-			iterator = iterator->next;
-		}
-		newListElement->next = iterator->next;
-		iterator->next = newListElement;
-	}
-
+  if (element == listHead) {
+    listHead = element->next;
+    free(element);
+    return;
+  }
+  struct Node *prev = listHead;
+  while (prev != NULL && prev->next != element) {
+    prev = prev->next;
+  }
+  if (prev != NULL) {
+    prev->next = element->next;
+    free(element);
+  }
 }
 
-void listRemove(struct linkedListElement *element){
+int main() {
+  struct Node *newElement = malloc(sizeof(struct Node));
+  newElement->data = 2;
+  newElement->next = NULL;
+  push(newElement);
 
-	if (element == listHead){
-	
-		listHead = element->next;
-		if(listHead == NULL){
-			element->prev = NULL;
-		}
-	} else if (element->next != NULL){
-		struct linkedListElement *test = listHead;
-		while (test->next != element){
-		
-			test = test->next;
-		}
-		test->next = element->next;
-	} else if (element->next == NULL){
-		struct linkedListElement *new = listHead;
-		while (new->next != element){
-		
-			new = new->next;
-		}
+  struct Node *newElement2 = malloc(sizeof(struct Node));
+  newElement2->data = 3;
+  newElement2->next = NULL;
+  push(newElement2);
 
-		new->next = NULL;
+  struct Node *newElement3 = malloc(sizeof(struct Node));
+  newElement3->data = 1;
+  newElement3->next = NULL;
+  push(newElement3);
 
-			
-	}
-	free(element);
+  struct Node *newElement4 = malloc(sizeof(struct Node));
+  newElement4->data = 7;
+  newElement4->next = NULL;
+  push(newElement4);
 
+  printf("Created Linked List: \n");
+  printList(listHead);
+
+  delete (newElement3);
+  printf("Linked List after Deletion of 1: \n");
+  printList(listHead);
+
+  return 0;
 }
-
-struct linkedListElement *listHead = NULL;
-int main(){
-	struct linkedListElement *newElement = malloc(sizeof(struct linkedListElement));
-
-	newElement->value = 7;
-	newElement->next = NULL;
-	
-	listAdd(newElement);
-
-	struct linkedListElement *newElement2 = malloc(sizeof(struct linkedListElement));
-
-	newElement2->value = 1;
-	newElement2->next = NULL;
-	listAdd(newElement2);
-
-	struct linkedListElement *newElement3 = malloc(sizeof(struct linkedListElement));
-	newElement3->value = 3;
-	newElement3->next = NULL;
-
-	struct linkedListElement *newElement4 = malloc(sizeof(struct linkedListElement));
-	newElement3->value = 2;
-	newElement3->next = NULL;
-
-	printf("Created Linked List : \n");
-	printList(linkedListElement);
-	
-}
-
